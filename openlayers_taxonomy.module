@@ -137,7 +137,8 @@ function openlayers_taxonomy_openlayers_layers() {
           'options' => array(),
           'events' => array(),
           'term_id' => $term->tid,
-          'view_name' => $view_name
+          'view_name' => $view_name,
+          'view_display' => $view_display
         );
         $layers[$layer->name] = $layer;
       }  

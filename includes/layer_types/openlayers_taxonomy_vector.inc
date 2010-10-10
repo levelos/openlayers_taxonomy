@@ -37,7 +37,6 @@ class openlayers_layer_type_openlayers_taxonomy_vector extends openlayers_layer_
    */
   function get_features($term_id, $view_name, $view_display = 'openlayers_1') {
     if ($view = views_get_view($view_name)) {
-
       $features = $view->execute_display($view_display, array($term_id));
 
       // Get dynamic title from view
