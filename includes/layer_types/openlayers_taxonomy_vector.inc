@@ -35,10 +35,10 @@ class openlayers_layer_type_openlayers_taxonomy_vector extends openlayers_layer_
    * @return
    *   array of features
    */
-  function get_features($term_id, $view_name = 'openlayers_taxonomy') {
+  function get_features($term_id, $view_name, $view_display = 'openlayers_1') {
     if ($view = views_get_view($view_name)) {
 
-      $features = $view->execute_display('openlayers_1', array($term_id));
+      $features = $view->execute_display($view_display, array($term_id));
 
       // Get dynamic title from view
       $term = taxonomy_get_term($term_id);
@@ -55,7 +55,7 @@ class openlayers_layer_type_openlayers_taxonomy_vector extends openlayers_layer_
   function render(&$map) {
     drupal_add_js(drupal_get_path('module', 'openlayers_taxonomy') .
       '/includes/layer_types/openlayers_taxonomy_vector.js');
-    $features = $this->get_features($this->data['term_id']);
+    $features = $this->get_features($this->data['term_id'], $this->data['view_name'], $this->data['view_display']);
     $this->data['features'] = $features;
     return $this->options;
   }

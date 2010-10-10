@@ -39,18 +39,19 @@ function openlayers_taxonomy_settings_form() {
   foreach($views as $view) {
     foreach ($view->display as $display => $data) {
       if ($data->display_plugin == 'openlayers') {
-        $options[] = $view->name . ': ' . $display;        
+        $options[$view->name . '::' . $display] = $view->name . ': ' . $display;        
       } 
     }   
   }
   
+  $default_value = variable_get('openlayers_taxonomy_view_name', '') . '::' . variable_get('openlayers_taxonomy_view_display', '');
   $form['openlayers_taxonomy_view'] = array(
     '#type' => 'select',
     '#title' => t('View (viewname: display name)'),
     '#multiple' => FALSE,
     '#description' => t('Select the view display combination that will return the map features for each term in the selected vocabulary. Only views that have an openlayers data display are available.'),
     '#options' => $options,
-    '#default_value' => variable_get('openlayers_taxonomy_view', -1)
+    '#default_value' => $default_value
   );
   
   $options = array();
@@ -80,7 +81,9 @@ function openlayers_taxonomy_settings_form() {
  */
 function openlayers_taxonomy_settings_form_submit($form, $form_state) {
   variable_set('openlayers_taxonomy_vids', $form_state['values']['openlayers_taxonomy_vids']);
-  variable_set('openlayers_taxonomy_view', $form_state['values']['openlayers_taxonomy_view']);
+  $viewinfo = explode('::', $form_state['values']['openlayers_taxonomy_view']);
+  variable_set('openlayers_taxonomy_view_name', $viewinfo[0]);
+  variable_set('openlayers_taxonomy_view_display', $viewinfo[1]);
 }
 
 /**
@@ -112,6 +115,8 @@ function openlayers_taxonomy_openlayers_layers() {
 
   $vids = variable_get('openlayers_taxonomy_vids', array());
   if (!empty($vids)) {
+    $view_name = variable_get('openlayers_taxonomy_view_name', '');
+    $view_display = variable_get('openlayers_taxonomy_view_display', '');
     foreach($vids as $vid) {
       $terms = taxonomy_get_tree($vid);
       
@@ -131,7 +136,8 @@ function openlayers_taxonomy_openlayers_layers() {
           'url' => array(),
           'options' => array(),
           'events' => array(),
-          'term_id' => $term->tid
+          'term_id' => $term->tid,
+          'view_name' => $view_name
         );
         $layers[$layer->name] = $layer;
       }  
